@@ -1,0 +1,6 @@
+{
+    "core.debugprint": "[FunnyHostages][DEBUG]: {message}",
+    "core.config": "[FunnyHostages] Konfiguration geladen",
+    "admin.unknown_command": "[FunnyHostages] Unbekannter Befehl: {command}",
+    "admin.reload": "[FunnyHostages] Konfiguration neu geladen"
+}
