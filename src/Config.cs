@@ -4,10 +4,16 @@ using System.Text.Json.Serialization;
 
 namespace FunnyHostages
 {
-    public class InfoMessagesConfig
+    public class HostagesConfig
     {
-        [JsonPropertyName("description")] public Dictionary<string, string> Description { get; set; } = [];
-        [JsonPropertyName("sub_commands")] public Dictionary<string, InfoMessagesConfig> SubCommands { get; set; } = [];
+        // hostage min wait time after sound
+        [JsonPropertyName("min_wait_time")] public int MinWaitTime { get; set; } = 8;
+        // hostage max wait time after sound
+        [JsonPropertyName("max_wait_time")] public int MaxWaitTime { get; set; } = 20;
+        // max distance for nearest player
+        [JsonPropertyName("max_distance")] public int MaxDistance { get; set; } = 1000;
+        // hostage sounds
+        [JsonPropertyName("sounds")] public Dictionary<string, List<string>> Sounds { get; set; } = [];
     }
 
     public class PluginConfig : BasePluginConfig
@@ -17,7 +23,7 @@ namespace FunnyHostages
         // debug prints
         [JsonPropertyName("debug")] public bool Debug { get; set; } = false;
         // info messages
-        [JsonPropertyName("messages")] public Dictionary<string, InfoMessagesConfig> Messages { get; set; } = [];
+        [JsonPropertyName("hostages")] public Dictionary<string, HostagesConfig> Hostages { get; set; } = [];
     }
 
     public partial class FunnyHostages : BasePlugin, IPluginConfig<PluginConfig>
@@ -28,7 +34,7 @@ namespace FunnyHostages
         {
             Config = config;
             // sort messages by key
-            Config.Messages = Config.Messages.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+            Config.Hostages = Config.Hostages.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
             // update config and write new values from plugin to config file if changed after update
             Config.Update();
             Console.WriteLine(Localizer["core.config"]);
