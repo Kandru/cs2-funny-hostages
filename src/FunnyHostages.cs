@@ -75,9 +75,12 @@ namespace FunnyHostages
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
-            if (!Config.Enabled || _hostages.Count == 0) return HookResult.Continue;
-            FindHostages();
-            _isDuringRound = true;
+            if (!Config.Enabled) return HookResult.Continue;
+            Server.NextFrame(() =>
+            {
+                FindHostages();
+                if (_hostages.Count > 0) _isDuringRound = true;
+            });
             return HookResult.Continue;
         }
 
@@ -138,11 +141,20 @@ namespace FunnyHostages
             foreach (var hostage in hostages)
             {
                 DebugPrint($"Found hostage {hostage.Index} at {hostage.AbsOrigin}");
-                var randomHostage = Config.Hostages.ElementAt(_random.Next(Config.Hostages.Count));
+                var availableHostages = Config.Hostages.Keys.Except(_hostages.Values.Select(h => h["type"])).ToList();
+                if (!availableHostages.Any())
+                {
+                    DebugPrint("No unique hostage types available. Skipping this hostage.");
+                    continue;
+                }
+                var randomHostageKey = availableHostages[_random.Next(availableHostages.Count)];
+                var randomHostage = Config.Hostages[randomHostageKey];
                 _hostages.Add((int)hostage.Index, new Dictionary<string, string>
                 {
-                    { "type", randomHostage.Key },
-                    { "next_random_sound", "0" }
+                    { "type", randomHostageKey },
+                    { "next_random_sound", (DateTimeOffset.UtcNow.ToUnixTimeSeconds() + _random.Next(
+                    Config.Hostages[randomHostageKey].MinWaitTime,
+                    Config.Hostages[randomHostageKey].MaxWaitTime)).ToString() }
                 });
             }
         }

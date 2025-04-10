@@ -28,7 +28,7 @@ namespace FunnyHostages
                 return GetRandomElement(defaultSounds);
             }
 
-            DebugPrint($"Found nearest player: {nearestPlayer.PlayerName} at {nearestPlayer.AbsOrigin}");
+            DebugPrint($"Found nearest player: {nearestPlayer.PlayerName} at {nearestPlayer.Pawn!.Value!.AbsOrigin}");
 
             var sounds = nearestPlayer.Team switch
             {
